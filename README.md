@@ -58,6 +58,6 @@ This project is a simple ASP.NET Core Web API for managing a ToDo list. The API 
    dotnet run
    ```
 ## Testing with Swagger
-- Once the application is running, you can access Swagger UI at http://localhost:5000/swagger to test and view API documentation.
+- Once the application is running, you can access Swagger UI at http://localhost:7261/swagger to test and view API documentation.
 
 
