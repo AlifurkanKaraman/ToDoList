@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using ToDoList.DTOs;
 
 namespace ToDoList.Controllers
 {
@@ -33,33 +32,52 @@ namespace ToDoList.Controllers
                 return Ok(currentToDo);
             }
 
-            return NotFound($"Requested ToDo with id {id} is not on the list");
+            return NotFound($"Requested ToDo with id {id} is not found!");
         }
 
         // POST api/<ToDoController>
         [HttpPost]
-        public IActionResult Post([FromBody] ToDo newToDo)
+        public IActionResult Post([FromBody] ToDoDto newToDoDto)
         {
-            if (string.IsNullOrWhiteSpace(newToDo.Title))
+            if (string.IsNullOrWhiteSpace(newToDoDto.Title))
             {
                 return BadRequest("Title is required.");
             }
-
+            var newToDo = new ToDo(newToDoDto.Title, newToDoDto.Description);
             toDoList.Add(newToDo);
             return Ok("ToDo added successfully.");
-
         }
 
         // PUT api/<ToDoController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public ActionResult<ToDo> Put(int id, [FromBody] ToDo newToDo)
         {
+            var currentToDo = toDoList.FirstOrDefault(ToDo => ToDo.Id == id);
+            if (currentToDo != null)
+            {
+                if (!string.IsNullOrEmpty(newToDo.Title))
+                    currentToDo.Title = newToDo.Title;
+                if (!string.IsNullOrEmpty(newToDo.Description))
+                    currentToDo.Description = newToDo.Description;
+                if (newToDo.IsDone != currentToDo.IsDone)
+                    currentToDo.IsDone = newToDo.IsDone;
+                currentToDo.CreatedDate = DateTime.Now;
+                return Ok("ToDo modified successfully.");
+            }
+            return NotFound($"Requested ToDo with id {id} is not found!");
         }
 
         // DELETE api/<ToDoController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            var currentToDo = toDoList.FirstOrDefault(ToDo => ToDo.Id == id);
+            if (currentToDo != null)
+            {
+                toDoList.Remove(currentToDo);
+                return Ok("ToDo deleted successfully.");
+            }
+            return NotFound($"Requested ToDo with id {id} is not found!");
         }
     }
 }
