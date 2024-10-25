@@ -1,0 +1,39 @@
+# Build Folders
+bin/
+obj/
+
+# Visual Studio Files
+.vs/
+*.user
+*.suo
+
+# Rider/JetBrains
+.idea/
+*.sln.iml
+
+# User-specific files
+*.rsuser
+*.userosscache
+*.sln.docstates
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Logs
+*.log
+
+# Dotnet publish output
+publish/
+
+# Rider project files
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Other
+*.tmp
+*.bak
+*.swp
