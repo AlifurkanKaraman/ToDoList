@@ -43,11 +43,11 @@ This project is a simple ASP.NET Core Web API for managing a ToDo list. The API 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/todo-api.git
+   git clone https://github.com/yourusername/ToDoList.git
    ```
 2. Navigate to the project directory:
     ```bash
-    cd todo-api
+    cd ToDoList
     ```
 3. Build the project:
     ```bash
