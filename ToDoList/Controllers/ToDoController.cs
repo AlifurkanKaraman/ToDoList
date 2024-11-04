@@ -7,26 +7,24 @@ namespace ToDoList.Controllers
     [ApiController]
     public class ToDoController : ControllerBase
     {
-        private static List<ToDo> toDoList =
-        [
-            new ToDo("Brush teeth", "Brush teeth in the morning"),
-            new ToDo("Read book", "Read for 30 minutes"),
-            new ToDo("Breakfast", "Make yourself a breakfast"),
-            new ToDo("Study programming", "Do 4 pomodoros for it"),
-            new ToDo("Lunch", "Prepare something for it")
-        ];
-        // GET: api/<ToDoController>
+        private readonly ToDoContext _context;
+
+        public ToDoController(ToDoContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public IEnumerable<ToDo> Get()
         {
-            return toDoList;
+            return _context.ToDoItems.ToList();
         }
 
         // GET api/<ToDoController>/5
         [HttpGet("{id}")]
         public ActionResult<ToDo> Get(int id)
         {
-            var currentToDo = toDoList.FirstOrDefault(ToDo => ToDo.Id == id);
+            var currentToDo = _context.ToDoItems.Find(id);
             if (currentToDo != null)
             {
                 return Ok(currentToDo);
@@ -43,25 +41,24 @@ namespace ToDoList.Controllers
             {
                 return BadRequest("Title is required.");
             }
-            var newToDo = new ToDo(newToDoDto.Title, newToDoDto.Description);
-            toDoList.Add(newToDo);
+            _context.ToDoItems.Add(new ToDo(newToDoDto.Title, newToDoDto.Description));
+            _context.SaveChanges();
             return Ok("ToDo added successfully.");
         }
 
         // PUT api/<ToDoController>/5
         [HttpPut("{id}")]
-        public ActionResult<ToDo> Put(int id, [FromBody] ToDo newToDo)
+        public ActionResult<ToDo> Put(int id, [FromBody] ToDo updatedToDo)
         {
-            var currentToDo = toDoList.FirstOrDefault(ToDo => ToDo.Id == id);
+            var currentToDo = _context.ToDoItems.Find(id);
             if (currentToDo != null)
             {
-                if (!string.IsNullOrEmpty(newToDo.Title))
-                    currentToDo.Title = newToDo.Title;
-                if (!string.IsNullOrEmpty(newToDo.Description))
-                    currentToDo.Description = newToDo.Description;
-                if (newToDo.IsDone != currentToDo.IsDone)
-                    currentToDo.IsDone = newToDo.IsDone;
+                currentToDo.Title = updatedToDo.Title ?? currentToDo.Title;
+                currentToDo.Description = updatedToDo.Description ?? currentToDo.Description;
+                currentToDo.IsDone = updatedToDo.IsDone;
                 currentToDo.CreatedDate = DateTime.Now;
+                _context.SaveChanges();
+
                 return Ok("ToDo modified successfully.");
             }
             return NotFound($"Requested ToDo with id {id} is not found!");
@@ -71,10 +68,11 @@ namespace ToDoList.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var currentToDo = toDoList.FirstOrDefault(ToDo => ToDo.Id == id);
+            var currentToDo = _context.ToDoItems.Find(id);
             if (currentToDo != null)
             {
-                toDoList.Remove(currentToDo);
+                _context.ToDoItems.Remove(currentToDo);
+                _context.SaveChanges();
                 return Ok("ToDo deleted successfully.");
             }
             return NotFound($"Requested ToDo with id {id} is not found!");
